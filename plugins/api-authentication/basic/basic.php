@@ -115,6 +115,7 @@ class PlgApiAuthenticationBasic extends CMSPlugin
 			// Invalid user
 			$response->status        = Authentication::STATUS_FAILURE;
 			$response->error_message = Text::_('JGLOBAL_AUTH_NO_USER');
+
 		}
 	}
 }
