@@ -20,6 +20,7 @@ use Joomla\CMS\Object\CMSObject;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\Component\Content\Administrator\Helper\ContentHelper;
 use Joomla\Component\Mails\Administrator\Helper\MailsHelper;
 
 /**
@@ -115,11 +116,26 @@ class HtmlView extends BaseHtmlView
 	 */
 	protected function addToolbar()
 	{
+		$canDo = ContentHelper::getActions('com_mails');
+
 		// Get the toolbar object instance
 		$toolbar = Toolbar::getInstance('toolbar');
 		$user = Factory::getUser();
 
 		ToolbarHelper::title(Text::_('COM_MAILS_MAILS_TITLE'), 'envelope');
+
+		if ($canDo->get('core.create'))
+		{
+			$toolbar->addNew('template.add');
+		}
+
+		if ($this->state->get('filter.published') == -2 && $canDo->get('core.delete'))
+		{
+			$toolbar->delete('template.delete')
+				->text('JTOOLBAR_EMPTY_TRASH')
+				->message('JGLOBAL_CONFIRM_DELETE')
+				->listCheck(true);
+		}
 
 		if ($user->authorise('core.admin', 'com_mails') || $user->authorise('core.options', 'com_mails'))
 		{
