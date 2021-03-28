@@ -41,7 +41,8 @@ class TemplatesModel extends ListModel
 				'subject', 'a.subject',
 				'body', 'a.body',
 				'htmlbody', 'a.htmlbody',
-				'extension'
+				'extension',
+				'published'
 			);
 		}
 
@@ -69,6 +70,9 @@ class TemplatesModel extends ListModel
 		// Load the parameters.
 		$params = ComponentHelper::getParams('com_mails');
 		$this->setState('params', $params);
+
+		$published = $this->getUserStateFromRequest($this->context . '.published', 'filter_published', '');
+		$this->setState('filter.published', $published);
 
 		// List state information.
 		parent::populateState('a.template_id', 'asc');
