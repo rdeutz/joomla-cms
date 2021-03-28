@@ -60,7 +60,7 @@
 			label="JCONFIG_PERMISSIONS_LABEL"
 			filter="rules"
 			validate="rules"
-			component="com_messages"
+			component="com_mails"
 			section="component"
 		/>
 	</fieldset>
