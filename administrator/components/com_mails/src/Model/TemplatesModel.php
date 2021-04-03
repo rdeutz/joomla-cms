@@ -36,6 +36,7 @@ class TemplatesModel extends ListModel
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
+				'id', 'a.id',
 				'template_id', 'a.template_id',
 				'language', 'a.language',
 				'subject', 'a.subject',
@@ -43,6 +44,7 @@ class TemplatesModel extends ListModel
 				'htmlbody', 'a.htmlbody',
 				'extension',
 				'published'
+
 			);
 		}
 

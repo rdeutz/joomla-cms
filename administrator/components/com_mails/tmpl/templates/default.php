@@ -38,6 +38,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 						</caption>
 						<thead>
 							<tr>
+								<td class="w-1 text-center">
+									<?php echo HTMLHelper::_('grid.checkall'); ?>
+								</td>
 								<th scope="col" class="w-20">
 									<?php echo Text::_('JGLOBAL_TITLE'); ?>
 								</th>
@@ -64,6 +67,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 							$sub_id = str_replace('.', '_', $sub_id);
 							?>
 							<tr class="row<?php echo $i % 2; ?>">
+								<td class="text-center">
+									<?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->template_id); ?>
+								</td>
 								<td class="break-word">
 									<div class="dropdown">
 										<a href="#" role="button" id="mTemplate<?php echo $i; ?>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
