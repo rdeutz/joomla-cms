@@ -29,7 +29,6 @@ steps:
     commands:
       - composer validate --no-check-all --strict
       - composer install --no-progress --ignore-platform-reqs --no-dev
-      - composer require joomla/test "~3.0"
 
   - name: phan
     image: joomlaprojects/docker-images:php8.3-tools
@@ -403,6 +402,6 @@ trigger:
 
 ---
 kind: signature
-hmac: 4aa983103fc165a49461a90343a80c445b7fe501759f00d6d04df4ad8e1f91a3
+hmac: 94cef31d30c6f97087818ec6564d525a3944e732ccc321fb2810ba613a744aa8
 
 ...
