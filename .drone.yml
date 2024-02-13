@@ -21,20 +21,21 @@ steps:
       - echo $(date)
 
   - name: composer
-    image: joomlaprojects/docker-images:php8.3
+    image: joomlaprojects/docker-images:php8.3-tools
+    depends_on: [ phpcs ]
     volumes:
       - name: composer-cache
         path: /tmp/composer-cache
     commands:
       - composer validate --no-check-all --strict
-      - composer install --no-progress --ignore-platform-reqs
+      - composer install --no-progress --ignore-platform-reqs --no-dev
 
   - name: phan
-    image: joomlaprojects/docker-images:php8.1-ast
+    image: joomlaprojects/docker-images:php8.3-tools
     depends_on: [ phpcs ]
     failure: ignore
     commands:
-      - ./libraries/vendor/bin/phan
+      - phan
 
   - name: npm
     image: node:20-bullseye-slim
@@ -63,10 +64,10 @@ steps:
 
   - name: php83-unit
     depends_on: [ phpcs ]
-    image: joomlaprojects/docker-images:php8.3
+    image: joomlaprojects/docker-images:php8.3-tools
     commands:
       - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Unit
+      - phpunit --testsuite Unit
 
   - name: php81-integration
     depends_on: [ npm ]
@@ -84,10 +85,10 @@ steps:
 
   - name: php83-integration
     depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php8.3
+    image: joomlaprojects/docker-images:php8.3-tools
     commands:
       - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration
+      - phpunit --testsuite Integration
 
   - name: php81-integration-pgsql
     depends_on: [ npm ]
@@ -105,10 +106,10 @@ steps:
 
   - name: php83-integration-pgsql
     depends_on: [ npm ]
-    image: joomlaprojects/docker-images:php8.3
+    image: joomlaprojects/docker-images:php8.3-tools
     commands:
       - php -v
-      - ./libraries/vendor/bin/phpunit --testsuite Integration --configuration phpunit-pgsql.xml.dist
+      - phpunit --testsuite Integration --configuration phpunit-pgsql.xml.dist
 
   - name: scss-cs
     depends_on: [ npm ]
@@ -401,6 +402,6 @@ trigger:
 
 ---
 kind: signature
-hmac: a97794b575f49239aa38e1a5145abed44821f1b24e95fe0fe4214d5edba751cf
+hmac: 2fbd7bc706852b19888a4fe82b280850f1a28fcd4af4ea3e638ce7dab76fcf67
 
 ...
