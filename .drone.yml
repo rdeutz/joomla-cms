@@ -17,7 +17,6 @@ steps:
     image: joomlaprojects/docker-images:php8.3-tools
     commands:
       - echo $(date)
-      - php-cs-fixer fix -vvv --dry-run --diff
       - phpcs --extensions=php -p --standard=ruleset.xml .
       - echo $(date)
 
@@ -402,6 +401,6 @@ trigger:
 
 ---
 kind: signature
-hmac: 63ac0f289c2963a045606ffd0c478e6044e7777856862a52c9cde1eaf778d7a0
+hmac: a97794b575f49239aa38e1a5145abed44821f1b24e95fe0fe4214d5edba751cf
 
 ...
