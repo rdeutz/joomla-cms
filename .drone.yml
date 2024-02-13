@@ -49,21 +49,21 @@ steps:
       - npm ci --unsafe-perm
 
   - name: php81-unit
-    depends_on: [ phpcs ]
+    depends_on: [ composer ]
     image: joomlaprojects/docker-images:php8.1
     commands:
       - php -v
       - ./libraries/vendor/bin/phpunit --testsuite Unit
 
   - name: php82-unit
-    depends_on: [ phpcs ]
+    depends_on: [ composer ]
     image: joomlaprojects/docker-images:php8.2
     commands:
       - php -v
       - ./libraries/vendor/bin/phpunit --testsuite Unit
 
   - name: php83-unit
-    depends_on: [ phpcs ]
+    depends_on: [ composer ]
     image: joomlaprojects/docker-images:php8.3-tools
     commands:
       - php -v
