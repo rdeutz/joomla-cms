@@ -13,6 +13,14 @@ steps:
     commands:
       - cp -v tests/certs/* /certificates/
 
+  - name: phpcs
+    image: joomlaprojects/docker-images:php8.3-tools
+    commands:
+      - echo $(date)
+      - php-cs-fixer fix -vvv --dry-run --diff
+      - phpcs --extensions=php -p --standard=ruleset.xml .
+      - echo $(date)
+
   - name: composer
     image: joomlaprojects/docker-images:php8.3
     volumes:
@@ -21,15 +29,6 @@ steps:
     commands:
       - composer validate --no-check-all --strict
       - composer install --no-progress --ignore-platform-reqs
-
-  - name: phpcs
-    image: joomlaprojects/docker-images:php8.1
-    depends_on: [ composer ]
-    commands:
-      - echo $(date)
-      - ./libraries/vendor/bin/php-cs-fixer fix -vvv --dry-run --diff
-      - ./libraries/vendor/bin/phpcs --extensions=php -p --standard=ruleset.xml .
-      - echo $(date)
 
   - name: phan
     image: joomlaprojects/docker-images:php8.1-ast
@@ -403,6 +402,6 @@ trigger:
 
 ---
 kind: signature
-hmac: c1434b09300896f8627ccb11c92e97878caf7a303772db01a647dca53a92fa3f
+hmac: 63ac0f289c2963a045606ffd0c478e6044e7777856862a52c9cde1eaf778d7a0
 
 ...
