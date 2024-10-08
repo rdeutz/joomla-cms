@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<form
+		class="form-validate"
+		id="contact-form"
+		method="post"
+		action=""
+	>
+		<row>
+			<col>
+				<field name="name" />
+			</col>
+			<col>
+				<field name="alias" />
+			</col>
+		</row>
+
+		<div class="main-card">
+			<tabs name="myTab" active="details" recall="true" breakpoint="768">
+				<tab name="detail">
+					<row>
+						<col size="9">
+							<row>
+								<col size="6">
+									<field name="user_id" />
+									<field name="image" />
+									<field name="con_position" />
+									<field name="email_to" />
+									<field name="address" />
+									<field name="suburb" />
+									<field name="state" />
+									<field name="postcode" />
+									<field name="country" />
+								</col>
+								<col size="6">
+									<field name="telephone" />
+									<field name="mobile" />
+									<field name="fax" />
+									<field name="webpage" />
+									<field name="sortname1" />
+									<field name="sortname2" />
+									<field name="sortname3" />
+								</col>
+							</row>
+						</col>
+						<col size="3">
+
+						</col>
+					</row>
+				</tab>
+
+				<tab name="misc">
+					<row>
+						<col>
+							<field name="misc" />
+						</col>
+					</row>
+				</tab>
+
+				<tab name="publishing">
+
+				</tab>
+
+				<tab name="associations" show-on-multilangual="true">
+
+				</tab>
+
+			</tabs>
+
+		</div>
+
+	</form>
+</layout>
+

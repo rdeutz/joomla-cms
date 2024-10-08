@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="component" method="upgrade">
+	<name>com_form</name>
+	<author>Joomla! Project</author>
+	<creationDate>2024-09</creationDate>
+	<copyright>(C) 2024 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>3.9.0</version>
+	<description>COM_FORM_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Component\Form</namespace>
+	<administration>
+		<menu>COM_FORM</menu>
+		<files folder="admin">
+			<file>access.xml</file>
+			<file>form.xml</file>
+			<file>config.xml</file>
+			<folder>forms</folder>
+			<folder>layouts</folder>
+			<folder>services</folder>
+			<folder>src</folder>
+			<folder>tmpl</folder>
+		</files>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB/com_form.ini</language>
+			<language tag="en-GB">language/en-GB/com_form.sys.ini</language>
+		</languages>
+	</administration>
+</extension>
