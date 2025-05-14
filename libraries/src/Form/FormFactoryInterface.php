@@ -31,4 +31,16 @@ interface FormFactoryInterface
      * @since   4.0.0
      */
     public function createForm(string $name, array $options = []): Form;
+
+    /**
+     * Method to get an instance of a form Layout.
+     *
+     * @param   string  $name     The name of the form.
+     * @param   array   $options  An array of form options.
+     *
+     * @return  FormLayout
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function createLayout(string $name, array $options = []): FormLayout;
 }

@@ -11,6 +11,7 @@ namespace Joomla\CMS\Form;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Model\FormFilesTrait;
 use Joomla\CMS\Object\CMSObject;
 use Joomla\CMS\User\CurrentUserInterface;
 use Joomla\CMS\User\CurrentUserTrait;
@@ -18,7 +19,6 @@ use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\Exception\DatabaseNotFoundException;
-use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
@@ -41,6 +41,7 @@ class Form implements CurrentUserInterface
 {
     use DatabaseAwareTrait;
     use CurrentUserTrait;
+    use FormFilesTrait;
 
     /**
      * The Registry data store for form fields during display.
@@ -89,6 +90,22 @@ class Form implements CurrentUserInterface
      * @since  1.7.0
      */
     protected static $forms = [];
+
+    /**
+     * Form type.
+     *
+     * @var    Form[]
+     * @since  1.7.0
+     */
+    protected $type = 'legacy';
+
+    /**
+     * Form Layout
+     *
+     * @var    FormLayout
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $layout;
 
     /**
      * Allows extensions to implement repeating elements
@@ -679,15 +696,10 @@ class Form implements CurrentUserInterface
      */
     public function loadFile($file, $reset = true, $xpath = null)
     {
-        // Check to see if the path is an absolute path.
-        if (!is_file($file)) {
-            // Not an absolute path so let's attempt to find one using JPath.
-            $file = Path::find(self::addFormPath(), strtolower($file) . '.xml');
+        $file = $this->findFormFile($file);
 
-            // If unable to find the file return false.
-            if (!$file) {
-                return false;
-            }
+        if ($file === false) {
+            return false;
         }
 
         // Attempt to load the XML file.
@@ -1307,7 +1319,7 @@ class Form implements CurrentUserInterface
      *
      * @since   1.7.0
      */
-    protected function &findFieldsByGroup($group = null, $nested = false)
+    public function &findFieldsByGroup($group = null, $nested = false)
     {
         $fields = [];
 
@@ -1865,5 +1877,59 @@ class Form implements CurrentUserInterface
     public function getFieldXml($name, $group = null)
     {
         return $this->findField($name, $group);
+    }
+
+    /**
+     * Set the form type
+     *
+     * @param   string  $type
+     *
+     * @return  void
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function setFormType($type = 'legacy'): void
+    {
+        if (in_array($type, ['legacy', 'next'])) {
+            $this->type = $type;
+        }
+    }
+
+    /**
+     * get the form type
+     *
+     * @return  string
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function getFormType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set the form layout
+     *
+     * @param   FormLayout  $layout
+     *
+     * @return  void
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function setLayout(FormLayout $layout)
+    {
+        $this->layout = $layout;
+    }
+
+    /**
+     * Get the form layout
+     *
+     * @return  FormLayout
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function getLayout(): FormLayout
+    {
+        return $this->layout;
     }
 }

@@ -16,6 +16,7 @@ use Joomla\CMS\Form\FormFactoryInterface;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\CurrentUserInterface;
+use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Event\DispatcherAwareInterface;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Utilities\ArrayHelper;
@@ -31,6 +32,9 @@ use Joomla\Utilities\ArrayHelper;
  */
 trait FormBehaviorTrait
 {
+    use FormFilesTrait;
+    use FormadminTrait;
+
     /**
      * Array of form objects.
      *
@@ -38,6 +42,8 @@ trait FormBehaviorTrait
      * @since  4.0.0
      */
     protected $_forms = [];
+
+    private $pathAdded = false;
 
     /**
      * Method to get a form object.
@@ -56,6 +62,112 @@ trait FormBehaviorTrait
      */
     protected function loadForm($name, $source = null, $options = [], $clear = false, $xpath = null)
     {
+        if (substr($source, 0, 1) === '<') {
+            return $this->loadFormLegacy($name, $source, $options, $clear, $xpath);
+        }
+
+        $this->addFormPaths();
+
+        // Find form.xml
+        $file = $this->findFormFile($source);
+
+        if ($file === false) {
+            throw new \RuntimeException('Could not find form file');
+        }
+
+        // Find form.layout.xml
+        $layout = $this->findLayoutFile($file);
+
+        if ($layout === false) {
+            return $this->loadFormLegacy($name, $source, $options, $clear, $xpath);
+        }
+
+        try {
+            $formFactory = $this->getFormFactory();
+        } catch (\UnexpectedValueException $e) {
+            $formFactory = Factory::getContainer()->get(FormFactoryInterface::class);
+        }
+
+        $formLayout = $formFactory->createLayout($source);
+        $form = $formFactory->createForm($name, $options);
+
+        $form->setFormType('next');
+
+        // We have a form.layout.xml file, check if we have an entry for it in the formadmin table
+        if ($this->hasFormDefinition($source)) {
+            $layoutDefinition = $this->getLayoutDefinion($source);
+            $formLayout->load($layoutDefinition);
+
+            $formDefinition = $this->getFormDefinion($source);
+            $form->load($formDefinition);
+        } else {
+            $formLayout->loadFile($layout);
+            $form->loadFile($source);
+        }
+
+        if ($form instanceof CurrentUserInterface && method_exists($this, 'getCurrentUser')) {
+            $form->setCurrentUser($this->getCurrentUser());
+        }
+
+        if (isset($options['load_data']) && $options['load_data']) {
+            // Get the data for the form.
+            $data = $this->loadFormData();
+        } else {
+            $data = [];
+        }
+
+        if (\is_array($data)) {
+            $data = (object) $data;
+        }
+
+        $jform = Factory::getApplication()->getInput()->get('jform', [], 'array');
+
+        if (empty($data) || !isset($data->catid)) {
+            $data->catid = $jform['catid'];
+        }
+
+        // We might need a special handling for categories
+
+        // Load CF
+        $parts = FieldsHelper::extract($name, $form);
+
+        if ($parts) {
+            FieldsHelper::prepareForm($parts[0] . '.' . $parts[1], $form, $data);
+        }
+
+        // Allow for additional modification of the form, and events to be triggered.
+        // We pass the data because plugins may require it.
+        $this->preprocessForm($form, $data);
+
+        // Load the data into the form after the plugins have operated.
+        $form->bind($data);
+
+        $form->setLayout($formLayout);
+
+        // Store the form for later.
+        // $hash = $this->createHash();
+        // $this->_forms[$hash] = $form;
+
+        return $form;
+    }
+
+    /**
+     * Method to get a form object.
+     *
+     * @param   string   $name     The name of the form.
+     * @param   string   $source   The form source. Can be XML string if file flag is set to false.
+     * @param   array    $options  Optional array of options for the form creation.
+     * @param   boolean  $clear    Optional argument to force load a new form.
+     * @param   string   $xpath    An optional xpath to search for the fields.
+     *
+     * @return  Form
+     *
+     * @see     Form
+     * @since   4.0.0
+     * @throws  \Exception
+     */
+    protected function loadFormLegacy($name, $source = null, $options = [], $clear = false, $xpath = null)
+    {
         // Handle the optional arguments.
         $options['control'] = ArrayHelper::getValue((array) $options, 'control', false);
 
@@ -73,13 +185,9 @@ trait FormBehaviorTrait
             return $this->_forms[$hash];
         }
 
-        // Get the form.
-        Form::addFormPath(JPATH_COMPONENT . '/forms');
-        Form::addFormPath(JPATH_COMPONENT . '/models/forms');
-        Form::addFieldPath(JPATH_COMPONENT . '/models/fields');
-        Form::addFormPath(JPATH_COMPONENT . '/model/form');
-        Form::addFieldPath(JPATH_COMPONENT . '/model/field');
+        $this->addFormPaths();
 
+        // Get the form.
         try {
             $formFactory = $this->getFormFactory();
         } catch (\UnexpectedValueException $e) {
@@ -121,6 +229,21 @@ trait FormBehaviorTrait
         $this->_forms[$hash] = $form;
 
         return $form;
+    }
+
+    protected function addFormPaths()
+    {
+        if ($this->pathAdded) {
+            return;
+        }
+
+        Form::addFormPath(JPATH_COMPONENT . '/forms');
+        Form::addFormPath(JPATH_COMPONENT . '/models/forms');
+        Form::addFieldPath(JPATH_COMPONENT . '/models/fields');
+        Form::addFormPath(JPATH_COMPONENT . '/model/form');
+        Form::addFieldPath(JPATH_COMPONENT . '/model/field');
+
+        $this->pathAdded = true;
     }
 
     /**

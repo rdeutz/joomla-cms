@@ -247,6 +247,11 @@ final class Fields extends CMSPlugin
     public function onContentPrepareForm(Model\PrepareFormEvent $event)
     {
         $form    = $event->getForm();
+
+        if ($form->getFormType() !== 'legacy') {
+            return;
+        }
+
         $data    = $event->getData();
         $context = $form->getName();
 

@@ -42,4 +42,21 @@ class FormFactory implements FormFactoryInterface
 
         return $form;
     }
+
+    /**
+     * Method to get an instance of a formlayout.
+     *
+     * @param   string  $name     The name of the form.
+     * @param   array   $options  An array of form options.
+     *
+     * @return  FormLayout
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function createLayout(string $name, array $options = []): FormLayout
+    {
+        $layout = new FormLayout($name, $options);
+
+        return $layout;
+    }
 }
