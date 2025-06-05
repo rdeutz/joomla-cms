@@ -237,11 +237,24 @@ trait FormBehaviorTrait
             return;
         }
 
-        Form::addFormPath(JPATH_COMPONENT . '/forms');
-        Form::addFormPath(JPATH_COMPONENT . '/models/forms');
-        Form::addFieldPath(JPATH_COMPONENT . '/models/fields');
-        Form::addFormPath(JPATH_COMPONENT . '/model/form');
-        Form::addFieldPath(JPATH_COMPONENT . '/model/field');
+        // Try to figure out what component we are using
+        $extension = '';
+
+        if (!empty($this->typeAlias)) {
+            [$extension] = explode('.', $this->typeAlias);
+        }
+
+        if (empty($extension) && !empty($this->option)) {
+            $extension = $this->option;
+        }
+
+        $basePath = JPATH_BASE . '/compoents/' . $extension;
+
+        Form::addFormPath($basePath . '/forms');
+        Form::addFormPath($basePath . '/models/forms');
+        Form::addFieldPath($basePath . '/models/fields');
+        Form::addFormPath($basePath . '/model/form');
+        Form::addFieldPath($basePath . '/model/field');
 
         $this->pathAdded = true;
     }
