@@ -1451,6 +1451,9 @@ abstract class AdminModel extends FormModel
 
             $historyData = array_merge($tableData, $data);
 
+            // We have to set the key for new items, would be always 0 otherwise
+            $historyData[$key] = $this->getState($this->getName() . '.id');
+
             $this->saveHistory($historyData, $context);
         }
 
