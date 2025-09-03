@@ -173,15 +173,15 @@ trait VersionableModelTrait
      * Utility method to get the hash after removing selected values. This lets us detect changes other than
      * modified date (which will change on every save).
      *
-     * @param   mixed        $jsonData   Either an object or a string with json-encoded data
+     * @param   array|object   $data   Either an object or an array with the item data
      *
-     * @return  string  SHA1 hash on success. Empty string on failure.
+     * @return  string         SHA1 hash on success. Empty string on failure.
      *
      * @since   __DEPLOY_VERSION__
      */
-    public function getSha1($jsonData)
+    public function getSha1(array|object $data)
     {
-        $object = \is_object($jsonData) ? $jsonData : json_decode($jsonData);
+        $object = \is_array($data) ? ArrayHelper::toObject($data) : $data;
 
         foreach ($this->ignoreChanges as $remove) {
             if (property_exists($object, $remove)) {
@@ -191,7 +191,7 @@ trait VersionableModelTrait
 
         // Convert integers, booleans, and nulls to strings to get a consistent hash value
         foreach ($object as $name => $value) {
-            if (\is_object($value)) {
+           if (\is_object($value)) {
                 // Go one level down for JSON column values
                 foreach ($value as $subName => $subValue) {
                     $object->$subName = \is_int($subValue) || \is_bool($subValue) || $subValue === null ? (string) $subValue : $subValue;
