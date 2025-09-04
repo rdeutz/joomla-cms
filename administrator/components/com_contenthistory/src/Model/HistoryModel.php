@@ -387,8 +387,11 @@ class HistoryModel extends ListModel
         $model = $app->bootComponent($extension)->getMVCFactory()->createModel($type, 'Administrator');
 
         if ($model instanceof VersionableModelInterface) {
-            $data      = ArrayHelper::fromObject($model->getItem($id));
-            $tableData = ArrayHelper::fromObject($model->getTable()->load($id));
+            $data         = ArrayHelper::fromObject($model->getItem((int) $id));
+
+            $contentTable = $model->getTable();
+            $contentTable->load((int) $id);
+            $tableData    = ArrayHelper::fromObject($contentTable);
 
             $historyData = array_merge($tableData, $data);
 
