@@ -18,12 +18,14 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\ContentHistory;
 use Joomla\CMS\Table\ContentType;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Utilities\ArrayHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -387,7 +389,24 @@ class HistoryModel extends ListModel
         $model = $app->bootComponent($extension)->getMVCFactory()->createModel($type, 'Administrator');
 
         if ($model instanceof VersionableModelInterface) {
-            $data         = ArrayHelper::fromObject($model->getItem((int) $id));
+            $data    = $model->getItem((int) $id);
+
+            $dispatcher = Factory::getContainer()->get(DispatcherInterface::class);
+
+            // Get the dispatcher and load the users plugins.
+            PluginHelper::importPlugin($group = 'content', null, true, $dispatcher);
+
+            // Trigger the data preparation event.
+            $data = $dispatcher->dispatch(
+                'onContentPrepareData',
+                new \Joomla\CMS\Event\Model\PrepareDataEvent('onContentPrepareData', [
+                    'context' => $extension . '.' . $type,
+                    'data'    => &$data, // @todo: Remove reference in Joomla 7, see PrepareDataEvent::__constructor()
+                    'subject' => new \stdClass(),
+                ])
+            )->getArgument('data', $data);
+
+            $data         = ArrayHelper::fromObject($data);
 
             $contentTable = $model->getTable();
             $contentTable->load((int) $id);
