@@ -393,7 +393,9 @@ class HistoryModel extends ListModel
             $contentTable->load((int) $id);
             $tableData    = ArrayHelper::fromObject($contentTable);
 
-            $historyData = array_merge($tableData, $data);
+            $historyData = array_merge($data, $tableData);
+
+            \asort($historyData);
 
             $result = $model->getSha1($historyData);
 
