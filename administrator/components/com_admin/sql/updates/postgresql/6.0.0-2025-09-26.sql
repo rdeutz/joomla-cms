@@ -4,7 +4,7 @@ UPDATE "#__content_types"
 SET "content_history_options" = jsonb_set(
 	"content_history_options"::jsonb,
 	'{displayLookup}',
-	(content_history_options->'displayLookup')::jsonb ||
+	"content_history_options"::jsonb->'displayLookup' ||
 		jsonb_build_object(
 		'sourceColumn', 'tags',
 		'targetTable', '#__tags',
