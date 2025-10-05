@@ -20,4 +20,13 @@ WHERE `type_alias` IN (
 		 'com_newsfeeds.category',
 		 'com_banners.category',
 		 'com_users.category'
+	)
+AND NOT JSON_CONTAINS(
+	JSON_EXTRACT(`content_history_options`, '$.displayLookup'),
+	JSON_OBJECT(
+		'sourceColumn', 'tags',
+		'targetTable', '#__tags',
+		'targetColumn', 'id',
+		'displayColumn', 'title'
+		)
 	);

@@ -21,4 +21,13 @@ WHERE "type_alias" IN (
 		 'com_newsfeeds.category',
 		 'com_banners.category',
 		 'com_users.category'
+	)
+AND NOT EXISTS (
+	SELECT * FROM jsonb_array_elements("content_history_options"::jsonb->'displayLookup')
+	WHERE value = jsonb_build_object(
+		'sourceColumn', 'tags',
+		'targetTable', '#__tags',
+		'targetColumn', 'id',
+		'displayColumn', 'title'
+		)
 	);
