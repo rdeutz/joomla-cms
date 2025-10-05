@@ -1,8 +1,8 @@
 -- Update content types for lookup tags
 
 UPDATE "#__content_types"
-SET content_history_options = jsonb_set(
-	content_history_options::jsonb,
+SET "content_history_options" = jsonb_set(
+	"content_history_options"::jsonb,
 	'{displayLookup}',
 	(content_history_options->'displayLookup')::jsonb ||
 		jsonb_build_object(
@@ -12,7 +12,7 @@ SET content_history_options = jsonb_set(
 		'displayColumn', 'title'
 		)
 				)
-WHERE type_alias IN (
+WHERE "type_alias" IN (
 		 'com_content.article',
 		 'com_contact.contact',
 		 'com_newsfeeds.newsfeed',
