@@ -9,7 +9,8 @@ SET `content_history_options` = JSON_ARRAY_APPEND(
 		'targetTable', '#__tags',
 		'targetColumn', 'id',
 		'displayColumn', 'title'
-	))
+		)
+	)
 WHERE `type_alias` IN (
 		 'com_content.article',
 		 'com_contact.contact',
