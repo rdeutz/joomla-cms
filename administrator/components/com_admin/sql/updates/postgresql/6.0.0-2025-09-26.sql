@@ -11,7 +11,7 @@ SET "content_history_options" = jsonb_set(
 		'targetColumn', 'id',
 		'displayColumn', 'title'
 		)
-				)
+	)
 WHERE "type_alias" IN (
 		 'com_content.article',
 		 'com_contact.contact',
